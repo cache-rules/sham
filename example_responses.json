@@ -1,0 +1,19 @@
+{
+  "some/example/url": [{
+    "args": {},
+    "response": {
+      "example": "response with no args"
+    }
+  }, {
+    "args": {"hello": ["world"]},
+    "response": {
+      "example": "response with query args ?hello=world"
+    }
+  }],
+  "some/other/example/url": [{
+    "args": {},
+    "response": {
+      "data": ["Look at me I'm a response!"]
+    }
+  }]
+}

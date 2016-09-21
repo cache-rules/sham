@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Catch All</title>
+</head>
+<body>
+<h1>Gotta Catch 'Em All</h1>
+<div class="requests">
+    {% if requests | length > 0 %}
+    <table class="requests">
+        <thead>
+            <tr>
+                <th>PATH</th>
+                <th>ARGS</th>
+                <th>METHOD</th>
+                <th>HEADERS</th>
+                <th>BODY</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for r in requests %}
+            <tr>
+                <td>{{ r.path }}</td>
+
+                <td>{{ r.args }}</td>
+                <td>{{ r.method }}</td>
+                <td>
+                    {%  for h in r.headers %}
+                        <div>{{ h }}</div>
+                    {% endfor %}
+                </td>
+                <td>{{ r.body }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="info">
+        <h3>No requests captured yet.</h3>
+    </div>
+    {% endif %}
+</div>
+</body>
+</html>
