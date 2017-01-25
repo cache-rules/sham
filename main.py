@@ -34,11 +34,17 @@ def catch_all(path):
     if path == 'favicon.ico':
         return 'Not Found', 404
 
+    print('loc1')
+    print(request.is_json)
+
     if request.is_json:
+        print("JSON: {}".format(request.json))
         data = request.json
     else:
+        print(request.data)
         data = request.data
 
+    print('loc2')
     cr = CapturedRequest(str(uuid4()), path, dict(request.args), request.method, request.headers, data)
     print("REQUEST: {}".format(cr))
 
