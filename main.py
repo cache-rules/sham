@@ -52,7 +52,6 @@ def catch_all(path):
 
     if potential_responses is not None:
         for resp in potential_responses:
-            print(resp['args'])
             if all([resp['args'][key] == cr.args[key] or resp['args'][key] == '*' for key in cr.args.keys()]):
                 data = resp['response']
 
