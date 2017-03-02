@@ -52,7 +52,8 @@ def catch_all(path):
 
     if potential_responses is not None:
         for resp in potential_responses:
-            if resp['args'] == cr.args:
+            print(resp['args'])
+            if all([resp['args'][key] == cr.args[key] or resp['args'][key] == '*' for key in cr.args.keys()]):
                 data = resp['response']
 
                 if isinstance(data, dict):
@@ -72,7 +73,6 @@ if __name__ == '__main__':
     if args.responses:
         with open(args.responses) as f:
             RESPONSES = json.load(f)
-            print(RESPONSES)
 
     for resp_list in RESPONSES.values():
         for resp in resp_list:
