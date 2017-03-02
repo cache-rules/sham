@@ -52,7 +52,7 @@ def catch_all(path):
 
     if potential_responses is not None:
         for resp in potential_responses:
-            if all([resp['args'][key] == cr.args[key] or resp['args'][key] == '*' for key in cr.args.keys()]):
+            if all([resp['args'][key] == cr.args[key][0] or resp['args'][key] == '*' for key in cr.args.keys()]):
                 data = resp['response']
 
                 if isinstance(data, dict):
