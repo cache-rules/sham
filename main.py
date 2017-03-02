@@ -28,7 +28,6 @@ def index():
 def catch_all(path):
     global REQUESTS
     global REQUESTS_LOCK
-    args = []
 
     if path == 'favicon.ico':
         return 'Not Found', 404
@@ -53,7 +52,7 @@ def catch_all(path):
 
     if potential_responses is not None:
         for resp in potential_responses:
-            if resp['args'] == cr.args:
+            if all([resp['args'][key] == cr.args[key][0] or resp['args'][key] == '*' for key in cr.args.keys()]):
                 data = resp['response']
 
                 if isinstance(data, dict):
@@ -65,7 +64,7 @@ def catch_all(path):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Grice')
+    parser = argparse.ArgumentParser(description='Sham')
     parser.add_argument('port', help='The port to bind to')
     parser.add_argument('--responses', default=None, help='Path to responses file in JSON format.')
     args = parser.parse_args()
