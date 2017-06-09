@@ -16,29 +16,31 @@
       "data": ["Look at me I'm a response!"]
     }
   }],
-  "test1/(?P<item>.*)": [{
+  "named_group/(?P<item>.*)": [{
     "args": null,
     "response": {"{item}": "A response!"}
   }],
-  "test2/(?P<item>.*)": [{
+  "named_group_not_returned/(?P<item>.*)": [{
     "args": null,
     "response": {"item": "A response!"}
   }],
-  "test3/.*": [{
+  "basic_regex/.*": [{
     "args": null,
     "response": {"item": "A response!"}
   }],
-  "test4/.*": [{
-    "args": null,
-    "response": "A response!"
-  }],
-  "test5/(?P<item>.*)": [{
+  "named_group_str_response/(?P<item>.*)": [{
     "args": null,
     "response": "A response! {item}"
   }],
-  "test_method": [{
+  "limited_methods": [{
     "methods": ["get", "post"],
     "args": null,
+    "response": "A response!"
+  }],
+  "example_delete": [{
+    "methods": ["delete"],
+    "args": null,
+    "status_code": 204,
     "response": "A response!"
   }]
 }
