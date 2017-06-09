@@ -15,5 +15,30 @@
     "response": {
       "data": ["Look at me I'm a response!"]
     }
+  }],
+  "test1/(?P<item>.*)": [{
+    "args": null,
+    "response": {"{item}": "A response!"}
+  }],
+  "test2/(?P<item>.*)": [{
+    "args": null,
+    "response": {"item": "A response!"}
+  }],
+  "test3/.*": [{
+    "args": null,
+    "response": {"item": "A response!"}
+  }],
+  "test4/.*": [{
+    "args": null,
+    "response": "A response!"
+  }],
+  "test5/(?P<item>.*)": [{
+    "args": null,
+    "response": "A response! {item}"
+  }],
+  "test_method": [{
+    "methods": ["get", "post"],
+    "args": null,
+    "response": "A response!"
   }]
 }

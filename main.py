@@ -1,12 +1,14 @@
 import argparse
 import json
 import threading
+import re
 from collections import namedtuple
 from uuid import uuid4
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 from waitress import serve
 from werkzeug.datastructures import ImmutableMultiDict
+from werkzeug.exceptions import MethodNotAllowed, NotFound
 
 RESPONSES = {}
 REQUESTS = []
@@ -14,6 +16,14 @@ REQUESTS_LOCK = threading.RLock()
 CapturedRequest = namedtuple('CapturedRequest', ['id', 'path', 'args', 'method', 'headers', 'body'])
 app = Flask(__name__)
 app.debug = True
+
+
+def args_match(resp: dict, cr: CapturedRequest) -> bool:
+    return all([resp['args'][key] == cr.args[key][0] or resp['args'][key] == '*' for key in cr.args.keys()])
+
+
+def methods_match(resp: dict, cr: CapturedRequest) -> bool:
+    return not resp.get('methods') or cr.method.lower() in resp['methods'] or resp['methods'] == '*'
 
 
 @app.route('/')
@@ -24,7 +34,6 @@ def index():
 
 
 @app.route('/<path:path>', methods=['GET', 'PUT', 'POST', 'PATCH', 'DELETE'])
-# @app.route('/<path:path>')
 def catch_all(path):
     global REQUESTS
     global REQUESTS_LOCK
@@ -46,21 +55,35 @@ def catch_all(path):
             REQUESTS.pop(0)
 
     # Here we search the RESPONSES object to see if we have a response to return.
-    # TODO: currently this only checks the path and query args, we should add another parameter "method" so we can
-    # allow users to specify different responses based on their request method of choice.
-    potential_responses = RESPONSES.get(cr.path)
+    potential_responses = None
 
-    if potential_responses is not None:
-        for resp in potential_responses:
-            if all([resp['args'][key] == cr.args[key][0] or resp['args'][key] == '*' for key in cr.args.keys()]):
-                data = resp['response']
+    for pattern, responses in RESPONSES.items():
+        match = re.match(pattern, cr.path)
+        if match:
+            if potential_responses:
+                raise IndexError('Multiple path patterns match, please reconfigure responses.')
 
-                if isinstance(data, dict):
-                    return jsonify(**data)
-                else:
-                    return data
+            potential_responses = responses
+            # Any named groups in path will be extracted here
+            path_params = match.groupdict()
 
-    return jsonify(success=True)
+    if potential_responses is None:
+        raise NotFound
+
+    for resp in potential_responses:
+        if args_match(resp, cr) and methods_match(resp, cr):
+            data = resp['response']
+
+            if isinstance(data, dict):
+                # extra brackets are to prevent format from interpreting keys as references
+                data = '{' + json.dumps(data) + '}'
+
+            data = data.format(**path_params)
+            return data, resp.get('status_code', 200)
+
+    # TODO: MethodNotAllowed is raised both if methods didn't match and if no args didn't match, but ideally the second
+    # should raise a different HTTP error.
+    raise MethodNotAllowed
 
 
 if __name__ == '__main__':
