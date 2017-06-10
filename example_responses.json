@@ -15,5 +15,32 @@
     "response": {
       "data": ["Look at me I'm a response!"]
     }
+  }],
+  "named_group/(?P<item>.*)": [{
+    "args": null,
+    "response": {"{item}": "A response!"}
+  }],
+  "named_group_not_returned/(?P<item>.*)": [{
+    "args": null,
+    "response": {"item": "A response!"}
+  }],
+  "basic_regex/.*": [{
+    "args": null,
+    "response": {"item": "A response!"}
+  }],
+  "named_group_str_response/(?P<item>.*)": [{
+    "args": null,
+    "response": "A response! {item}"
+  }],
+  "limited_methods": [{
+    "methods": ["get", "post"],
+    "args": null,
+    "response": "A response!"
+  }],
+  "example_delete": [{
+    "methods": ["delete"],
+    "args": null,
+    "status_code": 204,
+    "response": "A response!"
   }]
 }
