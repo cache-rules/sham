@@ -1,7 +1,7 @@
 import argparse
 import json
-import threading
 import re
+import threading
 from collections import namedtuple
 from uuid import uuid4
 
@@ -78,7 +78,13 @@ def catch_all(path):
                 # extra brackets are to prevent format from interpreting keys as references
                 data = '{' + json.dumps(data) + '}'
 
-            data = data.format(**path_params)
+            if path_params:
+               data = data.format(**path_params)
+
+            if isinstance(data, str):
+                data = re.sub('^{{', '{', data)
+                data = re.sub('}}$', '}', data)
+
             return data, resp.get('status_code', 200)
 
     # TODO: MethodNotAllowed is raised both if methods didn't match and if no args didn't match, but ideally the second
