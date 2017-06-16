@@ -1,11 +1,11 @@
 import argparse
 import json
-import threading
 import re
+import threading
 from collections import namedtuple
 from uuid import uuid4
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 from waitress import serve
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import MethodNotAllowed, NotFound
@@ -57,7 +57,6 @@ def catch_all(path):
     # Here we search the RESPONSES object to see if we have a response to return.
     potential_responses = None
 
-    pr = RESPONSES.get(cr.path)
     for pattern, responses in RESPONSES.items():
         match = re.match(pattern, cr.path)
         if match:
