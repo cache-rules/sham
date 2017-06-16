@@ -5,7 +5,7 @@ import re
 from collections import namedtuple
 from uuid import uuid4
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from waitress import serve
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import MethodNotAllowed, NotFound
@@ -57,6 +57,7 @@ def catch_all(path):
     # Here we search the RESPONSES object to see if we have a response to return.
     potential_responses = None
 
+    pr = RESPONSES.get(cr.path)
     for pattern, responses in RESPONSES.items():
         match = re.match(pattern, cr.path)
         if match:
@@ -78,7 +79,13 @@ def catch_all(path):
                 # extra brackets are to prevent format from interpreting keys as references
                 data = '{' + json.dumps(data) + '}'
 
-            data = data.format(**path_params)
+            if path_params:
+               data = data.format(**path_params)
+
+            if isinstance(data, str):
+                data = re.sub('^{{', '{', data)
+                data = re.sub('}}$', '}', data)
+
             return data, resp.get('status_code', 200)
 
     # TODO: MethodNotAllowed is raised both if methods didn't match and if no args didn't match, but ideally the second
